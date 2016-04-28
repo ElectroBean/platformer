@@ -33,6 +33,14 @@ var SCREEN_WIDTH = canvas.width;
 var SCREEN_HEIGHT = canvas.height;
 
 
+var STATE_SPLASH = 0;
+var STATE_GAME = 1;
+var STATE_GAMEOVER = 2;
+var gameState = STATE_SPLASH;
+
+var heartImage = document.createElement("img");
+heartImage.src = "lifepoints.png";
+
 // some variables to calculate the Frames Per Second (FPS - this tells use
 // how fast our game is running, and allows us to make the game run at a 
 // constant speed)
@@ -81,6 +89,7 @@ var LAYER_BACKGROUND = 0;
 var LAYER_PLATFORMS = 1;
 var LAYER_LADDERS = 2;
 
+var score = 0;
 
 function cellAtPixelCoord(layer, x,y)
 {
@@ -174,10 +183,28 @@ var viewOffset = new Vector2();
 
 function run()
 {
-//asdasd	
 context.fillStyle = "#ccc";
 context.fillRect(0, 0, canvas.width, canvas.height);
 var deltaTime = getDeltaTime();
+switch(gameState)
+{
+case STATE_SPLASH:
+runSplash(deltaTime);
+break;
+case STATE_GAME:
+runGame(deltaTime);
+break;
+case STATE_GAMEOVER:
+runGameOver(deltaTime);
+break;
+}
+//end run
+}
+
+function runGame(deltaTime){
+	//asdasd	
+context.fillStyle = "#ccc";
+context.fillRect(0, 0, canvas.width, canvas.height);
 
 context.save();
 if(player.position.x >= viewOffset.x + canvas.width/2)
@@ -206,9 +233,50 @@ fps = fpsCount;
 fpsCount = 0;
 }
 // draw the FPS
-context.fillStyle = "#f00";
+context.fillStyle = "#FF0000";
 context.font="14px Arial";
-context.fillText("FPS: " + fps, 5, 20, 100);
+context.fillText("FPS: " + fps, 30, 20, 100);
+context.fill();
+
+context.fillStyle = "#000000"; 
+context.font = "16px Arial";
+var scoreText = "score: " + score;
+context.fillText("Score: " + score, SCREEN_WIDTH - 80, 20);
+context.fill();
+
+
+
+for(var i=0; i<this.lives; i++)
+{
+DrawImage(lifepoints * 3, 20, 20 )
+}
+}
+
+function runGameOver(){
+	context.font = "92px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "black";
+	
+	context.fillText("Game Over");
+}
+
+var splashTimer = 3;
+function runSplash(deltaTime){
+splashTimer -= deltaTime;
+if(splashTimer <= 0)
+{
+gameState = STATE_GAME;
+return;
+}
+context.font="92px Franklin Gothic Medium Condensed";
+context.textAlign = "center";
+context.fillStyle = "black";
+context.strokeStyle = "gold";
+
+
+context.fillText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+context.strokeText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+
 }
 
 initialize();
