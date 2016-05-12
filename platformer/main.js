@@ -529,14 +529,8 @@ function runGameOver(){
 	
 }
 
-var splashTimer = 3;
+
 function runSplash(deltaTime){
-splashTimer -= deltaTime;
-if(splashTimer <= 0)
-{
-gameState = STATE_GAME;
-return;
-}
 context.font="92px Franklin Gothic Medium Condensed";
 context.textAlign = "center";
 context.fillStyle = "black";
