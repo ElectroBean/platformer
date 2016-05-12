@@ -205,7 +205,7 @@ this.velocity.x = 0; // stop horizontal velocity
 }
 }
 
-if(cellAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
+if(triggerAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
 {
 gameState = STATE_GAMEOVER; 
 win = true;

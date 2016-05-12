@@ -119,9 +119,19 @@ if(y>SCREEN_HEIGHT)
 return 0;
 return cellAtTileCoord(layer, p2t(x), p2t(y));
 };
+
+function triggerAtTileCoord(layer, tx, ty){
+	if(tx < 0 || tx >= MAP.tw || ty < 0)
+return 0;
+// let the player drop of the bottom of the screen (this means death)
+if(ty <0 || ty >= MAP.th)
+return 0;
+return cells[layer][ty][tx];
+}
+
 function cellAtTileCoord(layer, tx, ty)
 {
-if(tx<0 || tx>=MAP.tw || ty<0)
+if(tx < 0 || tx >= MAP.tw || ty < 0)
 return 1;
 // let the player drop of the bottom of the screen (this means death)
 if(ty <0 || ty>=MAP.th)
@@ -298,7 +308,7 @@ player.update(deltaTime);
 
 player.draw();
 
-
+//bullet stuff
 
 
 if(player.shootTimer > 0)
@@ -317,8 +327,6 @@ else if(player.direction == LEFT){
 	bullets.push(e);
 }
 }
-
-//bullet stuff
 var hit=false;
 for(var i=0; i<bullets.length; i++)
 {
@@ -347,40 +355,44 @@ bullets.splice(i, 1);
 break;
 }
 }
-
-
-
 for(var i=0; i<bullets.length; i++){
-	var tx = pixelToTile(this.position.x);
-    var ty = pixelToTile(this.position.y);
-    var nx = (this.position.x)%TILE; // true if player overlaps right
-    var ny = (this.position.y)%TILE; // true if player overlaps below
+	var tx = pixelToTile(bullets[i].position.x);
+    var ty = pixelToTile(bullets[i].position.y);
+    var nx = (bullets[i].position.x)%TILE; // true if player overlaps right
+    var ny = (bullets[i].position.y)%TILE; // true if player overlaps below
     var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
     var cellright = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
     var celldown = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
     var celldiag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
 	
 	
-	if (this.velocity.x > 0) {
+	if (bullets[i].velocity.x > 0) {
  if ((cellright && !cell) || (celldiag && !celldown && ny)) {
  // clamp the x position to avoid moving into the platform we just hit
- this.position.x = tileToPixel(tx);
- this.velocity.x = 0; // stop horizontal velocity
- 
+ bullets[i].position.x = tileToPixel(tx);
+ bullets[i].velocity.x = 0; // stop horizontal velocity
+ //bullets.splice(i, 1);
  }
 }
-else if (this.velocity.x < 0) {
+else if (bullets[i].velocity.x < 0) {
  if ((cell && !cellright) || (celldown && !celldiag && ny)) {
 // clamp the x position to avoid moving into the platform we just hit
-this.position.x = tileToPixel(tx + 1);
-this.velocity.x = 0; // stop horizontal velocity
+bullets[i].position.x = tileToPixel(tx + 1);
+bullets[i].velocity.x = 0; // stop horizontal velocity
+//bullets.splice(i, 1);
 }
 }
 }
+
+for(var i=0; i<bullets.length; i++){
+	bullets[i].draw;
+}
+
 
 
 // end of bullet stuff
-if(player.lives >= 1)
+
+if(player.lives > 1)
 {
 for(var i=0; i<enemies.length; i++)
 {
@@ -393,10 +405,23 @@ if (intersects (player.position.x, player.position.y, TILE, TILE,
 	viewOffset.x = 0;
 	hit = true;
 	enemies.splice(j, 1);
-break;
+} 
 }
 }
+if(player.lives == 1)
+{
+for(var i=0; i<enemies.length; i++)
+{
+if (intersects (player.position.x, player.position.y, TILE, TILE,
+                      enemies[i].position.x, enemies[i].position.y, TILE, TILE) == true)
+{
+	gameState = STATE_GAMEOVER;
+} 
 }
+}
+
+
+
 
 
 for(var i=0; i<enemies.length; i++)
