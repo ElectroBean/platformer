@@ -15,15 +15,17 @@ this.sprite.setAnimationOffset(i, -55, -87);
 }
 
 	this.position = new Vector2();
-    this.position.set = (9*TILE, 0*TILE);	
 	this.width = 159;
 	this.height = 163;
 	this.velocity = new Vector2();
 	this.falling = true; 
 	this.jumping = false;
-	this.direction = LEFT; 
+	this.direction = RIGHT; 
 	this.shoot = false;
 	this.lives = 3;
+	this.sprite.setAnimation(ANIM_IDLE_RIGHT);
+	this.shootTimer = 0;
+	this.cooldownTimer = 0;
 	 
 };
 
@@ -78,19 +80,24 @@ Player.prototype.update = function(deltaTime)
  }
  
  if(keyboard.isKeyDown(keyboard.KEY_SHIFT) == true) {
- jump = true;
- if(this.direction == LEFT && this.shoot == false){
-	 this.sprite.setAnimation(ANIM_JUMP_LEFT);
- }
- if(this.direction == RIGHT && this.shoot == false){
-	 this.sprite.setAnimation(ANIM_JUMP_RIGHT);
- }
+     jump = true;
  }
  
- if(keyboard.isKeyDown(keyboard.KEY_UP) == true && this.sprite.currentAnimation != ANIM_CLIMB){
+ if(keyboard.isKeyDown(keyboard.KEY_UP) == true && this.sprite.currentAnimation != ANIM_CLIMB && this.shoot == false){
 	 this.sprite.setAnimation(ANIM_CLIMB);
  }
  
+ 
+ if(this.cooldownTimer > 0)
+{
+this.cooldownTimer -= deltaTime;
+}
+if(keyboard.isKeyDown(keyboard.KEY_Z) == true && this.cooldownTimer <= 0) {
+sfxFire.play();
+this.cooldownTimer = 0.2;
+// Shoot a bullet
+}
+
  if(keyboard.isKeyDown(keyboard.KEY_Z) == true){
 	 this.shoot = true;
 	 if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_SHOOT_LEFT){
@@ -119,24 +126,23 @@ if (right)
 ddx = ddx + ACCEL; // player wants to go right
 else if (wasright)
 ddx = ddx - FRICTION; // player was going right, but not any more
+
+
 if (jump && !this.jumping && !falling)
 {
 ddy = ddy - JUMP; // apply an instantaneous (large) vertical impulse
-this.jumping = true;
-
-if(jump && !this.jumping && !falling){
-	// apply an instantaneous (large) vertical impulse
-	ddy = ddy - JUMP; 
 	this.jumping = true; 
-	if(this.direction == LEFT)
-		this.sprite.setAnimation(ANIM_JUMP_LEFT)
-	else
-		this.sprite.setAnimation(ANIM_JUMP_RIGHT)
+	if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_JUMP_LEFT){
+		this.sprite.setAnimation(ANIM_JUMP_LEFT);
+	}
+else if (this.direction == RIGHT && this.sprite.currentAnimation != ANIM_JUMP_RIGHT){
+	this.sprite.setAnimation(ANIM_JUMP_RIGHT);
 }
 }
+
 // calculate the new position and velocity:
-this.position.y = Math.floor(this.position.y + (deltaTime * this.velocity.y));
-this.position.x = Math.floor(this.position.x + (deltaTime * this.velocity.x));
+this.position.y = Math.round(this.position.y + (deltaTime * this.velocity.y));
+this.position.x = Math.round(this.position.x + (deltaTime * this.velocity.x));
 this.velocity.x = bound(this.velocity.x + (deltaTime * ddx), -MAXDX, MAXDX);
 this.velocity.y = bound(this.velocity.y + (deltaTime * ddy), -MAXDY, MAXDY);
 
@@ -197,6 +203,12 @@ else if (this.velocity.x < 0) {
 this.position.x = tileToPixel(tx + 1);
 this.velocity.x = 0; // stop horizontal velocity
 }
+}
+
+if(cellAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
+{
+gameState = STATE_GAMEOVER; 
+win = true;
 }
 }
 

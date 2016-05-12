@@ -36,7 +36,14 @@ var SCREEN_HEIGHT = canvas.height;
 var STATE_SPLASH = 0;
 var STATE_GAME = 1;
 var STATE_GAMEOVER = 2;
+var STATE_LIFELOST = 3;
 var gameState = STATE_SPLASH;
+
+var highscore = localStorage.getItem("highscore");
+if(highscore == null){
+	highscore = 0; 
+	localStorage.setItem("highscore", 0);
+}
 
 var heartImage = document.createElement("img");
 heartImage.src = "lifepoints.png";
@@ -55,7 +62,19 @@ chuckNorris.src = "hero.png";
 var pandaPool = document.createElement("img");
 pandaPool = "pandapool.png";
 
+
+var player = new Player();
+var keyboard = new Keyboard();
+var bullets = [];
+var enemies = [];
+
 var LAYER_COUNT = level1.layers.length;
+var LAYER_BACKGROUND = 0;
+var LAYER_PLATFORMS = 1;
+var LAYER_LADDERS = 2;
+var LAYER_OBJECT_ENEMIES = 3;
+var LAYER_OBJECT_TRIGGERS = 4;
+
 var MAP = {tw: level1.width, th: level1.height};
 var TILE = level1.tilewidth;
 var TILESET_TILE = level1.tilesets[0].tilewidth;
@@ -66,13 +85,14 @@ var TILESET_COUNT_Y = level1.tilesets[0].tilecount / TILESET_COUNT_X;
 var tileset = document.createElement("img");
 tileset.src = level1.tilesets[0].image;
 
-var player = new Player();
-var keyboard = new Keyboard();
+
+
+
 
  // abitrary choice for 1m
 var METER = TILE;
  // very exaggerated gravity (6x)
-var GRAVITY = METER * 9.8 * 3;
+var GRAVITY = METER * 9.8 * 4;
  // max horizontal speed (10 tiles per second)
 var MAXDX = METER * 10;
  // max vertical speed (15 tiles per second)
@@ -80,14 +100,13 @@ var MAXDY = METER * 15;
  // horizontal acceleration - take 1/2 second to reach maxdx
 var ACCEL = MAXDX * 2;
  // horizontal friction - take 1/6 second to stop from maxdx
-var FRICTION = MAXDX * 6;
+var FRICTION = MAXDX * 8;
  // (a large) instantaneous jump impulse
 var JUMP = METER * 1500;
 
+var ENEMY_MAXDX = METER * 5;
+var ENEMY_ACCEL = ENEMY_MAXDX * 2;
 
-var LAYER_BACKGROUND = 0;
-var LAYER_PLATFORMS = 1;
-var LAYER_LADDERS = 2;
 
 var score = 0;
 
@@ -152,6 +171,9 @@ idx++;
 }
 }
 
+var musicBackround;
+var sfxFire;
+
 var cells = []; // the array that holds our simplified collision data
 function initialize() {
  for(var layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++) { // initialize the collision map
@@ -177,9 +199,60 @@ cells[layerIdx][y][x+1] = 1;
  }
  }
  }
+
+
+idx = 0;
+for(var y = 0; y < level1.layers[LAYER_OBJECT_ENEMIES].height; y++) {
+for(var x = 0; x < level1.layers[LAYER_OBJECT_ENEMIES].width; x++) {
+if(level1.layers[LAYER_OBJECT_ENEMIES].data[idx] != 0) {
+var px = tileToPixel(x);
+var py = tileToPixel(y);
+var e = new Enemy(px, py);
+enemies.push(e);
+}
+idx++;
+}
+} 
+
+cells[LAYER_OBJECT_TRIGGERS] = [];
+idx = 0;
+for(var y = 0; y < level1.layers[LAYER_OBJECT_TRIGGERS].height; y++) {
+cells[LAYER_OBJECT_TRIGGERS][y] = [];
+for(var x = 0; x < level1.layers[LAYER_OBJECT_TRIGGERS].width; x++) {
+if(level1.layers[LAYER_OBJECT_TRIGGERS].data[idx] != 0) {
+cells[LAYER_OBJECT_TRIGGERS][y][x] = 1;
+cells[LAYER_OBJECT_TRIGGERS][y-1][x] = 1;
+cells[LAYER_OBJECT_TRIGGERS][y-1][x+1] = 1;
+cells[LAYER_OBJECT_TRIGGERS][y][x+1] = 1;
+}
+else if(cells[LAYER_OBJECT_TRIGGERS][y][x] != 1) {
+// if we haven't set this cell's value, then set it to 0 now
+cells[LAYER_OBJECT_TRIGGERS][y][x] = 0;
+}
+idx++;
+}
 }
 
-var viewOffset = new Vector2();
+
+
+var musicBackground = new Howl(
+{
+urls: ["background.ogg"],
+loop: true,
+buffer: true,
+volume: 0.1,
+} );
+musicBackground.play();
+sfxFire = new Howl(
+{
+urls: ["fireEffect.ogg"],
+buffer: true,
+volume: 0.2,
+onend: function() {
+isSfxPlaying = false;
+}
+} );
+}
 
 function run()
 {
@@ -197,20 +270,26 @@ break;
 case STATE_GAMEOVER:
 runGameOver(deltaTime);
 break;
+case STATE_LIFELOST:
+runLifeLost(deltaTime);
+break;
 }
 //end run
 }
+
+var viewOffset = new Vector2();
 
 function runGame(deltaTime){
 	//asdasd	
 context.fillStyle = "#ccc";
 context.fillRect(0, 0, canvas.width, canvas.height);
 
+
 context.save();
-if(player.position.x >= viewOffset.x + canvas.width/2)
+if(player.position.x > viewOffset.x + canvas.width/2)
 {
     viewOffset.x = player.position.x - canvas.width/2;
-  	
+	localStorage.setItem("viewOffset.x", viewOffset.x);
 }
 context.translate(-viewOffset.x, 0);
 drawMap();
@@ -219,9 +298,117 @@ player.update(deltaTime);
 
 player.draw();
 
+
+
+
+if(player.shootTimer > 0)
+player.shootTimer -= deltaTime;
+
+if(player.shoot == true && player.lives >= 1 && bullets.length <= 10 && player.shootTimer <= 0)
+{
+	if(player.direction == RIGHT){
+	var e = new Bullet(player.position.x + 100, player.position.y - 14, player.direction == RIGHT); 
+	player.shootTimer += 0.2;
+	bullets.push(e);
+	}
+else if(player.direction == LEFT){
+	var e = new Bullet(player.position.x - 60, player.position.y - 14, player.direction == RIGHT); 
+	player.shootTimer += 0.2;
+	bullets.push(e);
+}
+}
+
+//bullet stuff
+var hit=false;
+for(var i=0; i<bullets.length; i++)
+{
+bullets[i].update(deltaTime);
+if( bullets[i].position.x - viewOffset.x < 0 ||
+bullets[i].position.x - viewOffset.x > SCREEN_WIDTH)
+{
+hit = true;
+}
+for(var j=0; j<enemies.length; j++)
+{
+if(intersects( bullets[i].position.x, bullets[i].position.y, TILE, TILE,
+               enemies[j].position.x, enemies[j].position.y, TILE, TILE) == true)
+{
+// kill both the bullet and the enemy
+enemies.splice(j, 1);
+hit = true;
+// increment the player score
+score += 1;
+break;
+}
+}
+if(hit == true)
+{
+bullets.splice(i, 1);
+break;
+}
+}
+
+
+
+for(var i=0; i<bullets.length; i++){
+	var tx = pixelToTile(this.position.x);
+    var ty = pixelToTile(this.position.y);
+    var nx = (this.position.x)%TILE; // true if player overlaps right
+    var ny = (this.position.y)%TILE; // true if player overlaps below
+    var cell = cellAtTileCoord(LAYER_PLATFORMS, tx, ty);
+    var cellright = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty);
+    var celldown = cellAtTileCoord(LAYER_PLATFORMS, tx, ty + 1);
+    var celldiag = cellAtTileCoord(LAYER_PLATFORMS, tx + 1, ty + 1);
+	
+	
+	if (this.velocity.x > 0) {
+ if ((cellright && !cell) || (celldiag && !celldown && ny)) {
+ // clamp the x position to avoid moving into the platform we just hit
+ this.position.x = tileToPixel(tx);
+ this.velocity.x = 0; // stop horizontal velocity
+ 
+ }
+}
+else if (this.velocity.x < 0) {
+ if ((cell && !cellright) || (celldown && !celldiag && ny)) {
+// clamp the x position to avoid moving into the platform we just hit
+this.position.x = tileToPixel(tx + 1);
+this.velocity.x = 0; // stop horizontal velocity
+}
+}
+}
+
+
+// end of bullet stuff
+if(player.lives >= 1)
+{
+for(var i=0; i<enemies.length; i++)
+{
+if (intersects (player.position.x, player.position.y, TILE, TILE,
+                      enemies[i].position.x, enemies[i].position.y, TILE, TILE) == true)
+{
+    player.lives -= 1;
+	gameState = STATE_LIFELOST;
+	player.position.set (0, 0);
+	viewOffset.x = 0;
+	hit = true;
+	enemies.splice(j, 1);
+break;
+}
+}
+}
+
+
+for(var i=0; i<enemies.length; i++)
+{
+enemies[i].update(deltaTime);
+}
+
+for(var i=0; i<enemies.length; i++)
+{
+    enemies[i].draw();
+}
 context.restore();
-
-
 
 // update the frame counter
 fpsTime += deltaTime;
@@ -232,6 +419,10 @@ fpsTime -= 1;
 fps = fpsCount;
 fpsCount = 0;
 }
+
+context.fillStyle = "#78c018";
+context.fillRect(SCREEN_WIDTH - 220, 0, 500, 30)
+
 // draw the FPS
 context.fillStyle = "#FF0000";
 context.font="14px Arial";
@@ -241,23 +432,77 @@ context.fill();
 context.fillStyle = "#000000"; 
 context.font = "16px Arial";
 var scoreText = "score: " + score;
-context.fillText("Score: " + score, SCREEN_WIDTH - 80, 20);
+context.fillText("Score: " + score, SCREEN_WIDTH - 100, 22);
 context.fill();
 
 
-
-for(var i=0; i<this.lives; i++)
+if(player.position.y > SCREEN_HEIGHT && player.lives > 1){
+	player.lives -= 1;
+	gameState = STATE_LIFELOST;
+	player.position.set (0, 0);
+	viewOffset.x = 0;
+}
+else if(player.position.y > SCREEN_HEIGHT && player.lives == 1){
+	gameState = STATE_GAMEOVER;
+}
+for(var i=0; i<player.lives; i++)
 {
-DrawImage(lifepoints * 3, 20, 20 )
-}
+DrawImage(context, heartImage,  SCREEN_WIDTH - 200 + ((heartImage.width+8)*i), 15, 0, 1.5, 1.5);
 }
 
+}
+
+var win = false; 
+var firstGameOver = true; 
+var gotHighScore = false;
 function runGameOver(){
-	context.font = "92px Franklin";
+	if(firstGameOver == true){
+		firstGameOver = false; 
+		if(score >= highscore){
+			gotHighScore = true; 
+			highscore = score;
+			localStorage.setItem("highscore", score);
+		}
+		else {
+			gotHighScore = false;
+		}
+	}
+	if(win == false){
+	context.font = "32px Franklin";
 	context.textAling = "center"; 
 	context.fillStyle = "black";
+	context.fillText("You seem to have lost. Nice work!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	}
+	if(score == 0 && win == false){
+	context.font = "32px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "black";
+	context.fillText("You literally scored 0, you suck, go home.", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50);
+	}
+	if(score > 0 && win == false){
+	context.font = "32px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "black";
+	context.fillText("You scored, " +score + ", nice job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50);
+	}
+	if(score >= 0 && win == true){
+	context.font = "32px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "black";
+	context.fillText("You won!!! You scored: " +score, SCREEN_WIDTH/2, SCREEN_HEIGHT/2); 
+	}
 	
-	context.fillText("Game Over");
+	
+	if(keyboard.isKeyDown(keyboard.KEY_R) == true){
+	  player.lives = 3;
+	  gameState = STATE_GAME;
+	  player.position.set (0, 0);
+	  viewOffset.x = 0;
+	  player.sprite.setAnimation(ANIM_IDLE_RIGHT);
+	  win = false;
+	  score = 0; 
+	}
+	
 }
 
 var splashTimer = 3;
@@ -277,6 +522,22 @@ context.strokeStyle = "gold";
 context.fillText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 context.strokeText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 
+}
+
+var lifelosttime = 1;
+function runLifeLost(deltaTime){
+	lifelosttime -= deltaTime; 
+	if(lifelosttime <= 0){
+		gameState = STATE_GAME;
+		lifelosttime = 1;
+	}
+	
+	
+	context.font = "32px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "black";
+	
+	context.fillText("Life Lost! Good Job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 }
 
 initialize();
