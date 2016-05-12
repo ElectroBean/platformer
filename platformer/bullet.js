@@ -25,4 +25,6 @@ this.position.x = Math.floor(this.position.x + (deltaTime * this.velocity.x));
 
 Bullet.prototype.draw = function()
 {
+var screenX = this.position.x - viewOffset.x;
+this.sprite.draw(context, this.position.x, this.position.y);
 }
