@@ -371,7 +371,7 @@ for(var i=0; i<bullets.length; i++){
  // clamp the x position to avoid moving into the platform we just hit
  bullets[i].position.x = tileToPixel(tx);
  bullets[i].velocity.x = 0; // stop horizontal velocity
- //bullets.splice(i, 1);
+ bullets.splice(i, 1);
  }
 }
 else if (bullets[i].velocity.x < 0) {
@@ -379,13 +379,12 @@ else if (bullets[i].velocity.x < 0) {
 // clamp the x position to avoid moving into the platform we just hit
 bullets[i].position.x = tileToPixel(tx + 1);
 bullets[i].velocity.x = 0; // stop horizontal velocity
-//bullets.splice(i, 1);
+bullets.splice(i, 1);
 }
 }
 }
-
 for(var i=0; i<bullets.length; i++){
-	bullets[i].draw;
+	bullets[i].draw();
 }
 
 

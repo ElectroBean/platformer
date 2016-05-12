@@ -25,5 +25,4 @@ this.position.x = Math.floor(this.position.x + (deltaTime * this.velocity.x));
 
 Bullet.prototype.draw = function()
 {
-this.sprite.draw(context,this.position.x, this.position.y);
 }
