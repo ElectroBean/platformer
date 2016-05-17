@@ -1,13 +1,20 @@
 var Enemy = function(x, y) {	
-	this.sprite = new Sprite("enemy.png");
-    this.sprite.buildAnimation(2, 1, 88, 94, 0.3, [0]);
-    this.sprite.setAnimationOffset(0, -35, -60);
+	this.sprite = new Sprite("batEnemy.png");
+    this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [0, 1, 2, 3, 4]);
+	this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [6, 7, 8, 9, 10]);
+	for(var i=0; i<ANIM_MAXIMUM; i++){
+	this.sprite.setAnimationOffset(0, 1, -50);
+	}
     this.position = new Vector2(x, y);
     this.velocity = new Vector2();
     this.moveRight = true;
     this.pause = 0;
-
+    this.sprite.setAnimation(ANIM_FLY_RIGHT);
 };
+
+var ANIM_FLY_LEFT = 0; 
+var ANIM_FLY_RIGHT = 1; 
+var ANIM_MAXIMUM = 2; 
 
 Enemy.prototype.update = function(deltaTime)
 {

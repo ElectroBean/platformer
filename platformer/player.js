@@ -204,6 +204,61 @@ this.position.x = tileToPixel(tx + 1);
 this.velocity.x = 0; // stop horizontal velocity
 }
 }
+/////////////////////////////////////////////////////////////////////
+
+if(this.lives >= 1){
+
+var tx = pixelToTile(this.position.x);
+var ty = pixelToTile(this.position.y);
+var nx = (this.position.x)%TILE; 
+var ny = (this.position.y)%TILE; 
+var cell = cellAtTileCoord(LAYER_DEATHONTOUCH, tx, ty);
+var cellright = cellAtTileCoord(LAYER_DEATHONTOUCH, tx + 1, ty);
+var celldown = cellAtTileCoord(LAYER_DEATHONTOUCH, tx, ty + 1);
+var celldiag = cellAtTileCoord(LAYER_DEATHONTOUCH, tx + 1, ty + 1);
+
+ if (this.velocity.y > 0) {
+if ((celldown && !cell) || (celldiag && !cellright && nx)) {
+ this.position.y = tileToPixel(ty);
+ this.velocity.y = 0;
+ this.lives -= 1;
+ gameState = STATE_LIFELOST;
+ ny = 0; 
+}
+ }
+ else if (this.velocity.y < 0) {
+if ((cell && !celldown) || (cellright && !celldiag && nx)) {
+ this.position.y = tileToPixel(ty + 1);
+ this.velocity.y = 0;
+ cell = celldown;
+ cellright = celldiag; 
+  this.lives -= 1;
+ gameState = STATE_LIFELOST;
+ ny = 0; 
+}
+}
+if (this.velocity.x > 0) {
+ if ((cellright && !cell) || (celldiag && !celldown && ny)) {
+ this.position.x = tileToPixel(tx);
+ this.velocity.x = 0; 
+  this.lives -= 1;
+ gameState = STATE_LIFELOST;
+ }
+}
+else if (this.velocity.x < 0) {
+ if ((cell && !cellright) || (celldown && !celldiag && ny)) {
+this.position.x = tileToPixel(tx + 1);
+this.velocity.x = 0; 
+ this.lives -= 1;
+ gameState = STATE_LIFELOST;
+}
+}
+}
+
+if(this.lives <= 0){
+	gameState = STATE_GAMEOVER;
+}
+
 
 if(triggerAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
 {

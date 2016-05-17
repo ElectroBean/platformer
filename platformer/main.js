@@ -1,8 +1,23 @@
 var canvas = document.getElementById("gameCanvas");
 var context = canvas.getContext("2d");
 
+window.addEventListener('resize', resizeCanvas, false);
+
+function resizeCanvas()
+{
+	canvas.width = canvas.width; 
+	canvas.height = window.innerHeight - 500;
+}
+resizeCanvas();
+
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
+
+var background = new Image();
+background.src = "background.jpg";
+
+var gameBackground = new Image();
+gameBackground.src = "gamebg.jpg";
 
 // This function will return the time in seconds since the function 
 // was last called
@@ -74,6 +89,9 @@ var LAYER_PLATFORMS = 1;
 var LAYER_LADDERS = 2;
 var LAYER_OBJECT_ENEMIES = 3;
 var LAYER_OBJECT_TRIGGERS = 4;
+var LAYER_OBJECT_KEYS = 5; 
+var LAYER_OBJECT_DOORS = 6; 
+var LAYER_DEATHONTOUCH = 7;
 
 var MAP = {tw: level1.width, th: level1.height};
 var TILE = level1.tilewidth;
@@ -291,9 +309,7 @@ var viewOffset = new Vector2();
 
 function runGame(deltaTime){
 	//asdasd	
-context.fillStyle = "#ccc";
-context.fillRect(0, 0, canvas.width, canvas.height);
-
+	context.drawImage(gameBackground, 0, 0);
 
 context.save();
 if(player.position.x > viewOffset.x + canvas.width/2)
@@ -529,8 +545,15 @@ function runGameOver(){
 	
 }
 
-
+var splashTime = 3; 
 function runSplash(deltaTime){
+	splashTime -= deltaTime;
+	if(splashTime <= 0){
+		gameState = STATE_GAME;
+	}
+	
+	context.drawImage(background, 0, 0);
+	
 context.font="92px Franklin Gothic Medium Condensed";
 context.textAlign = "center";
 context.fillStyle = "black";
@@ -540,6 +563,7 @@ context.strokeStyle = "gold";
 context.fillText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 context.strokeText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 
+
 }
 
 var lifelosttime = 1;
@@ -548,6 +572,8 @@ function runLifeLost(deltaTime){
 	if(lifelosttime <= 0){
 		gameState = STATE_GAME;
 		lifelosttime = 1;
+		player.position.set (0, 0);
+		viewOffset.x = 0;
 	}
 	
 	
