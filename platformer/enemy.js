@@ -2,9 +2,6 @@ var Enemy = function(x, y) {
 	this.sprite = new Sprite("batEnemy.png");
     this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [0, 1, 2, 3, 4]);
 	this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [6, 7, 8, 9, 10]);
-	for(var i=0; i<ANIM_MAXIMUM; i++){
-	this.sprite.setAnimationOffset(0, 1, -50);
-	}
     this.position = new Vector2(x, y);
     this.velocity = new Vector2();
     this.moveRight = true;

@@ -1,7 +1,7 @@
 var Bullet = function(x, y, moveRight) {	
-	this.sprite = new Sprite("bullet.png");
-    this.sprite.buildAnimation(1, 1, 32, 32, -1, [0]);
-    this.sprite.setAnimationOffset(0, 0, 0);
+	this.sprite = new Sprite("bullet4.png");
+    this.sprite.buildAnimation(1, 1, 50, 50, -1, [0]);
+    this.sprite.setAnimationOffset(0, 0, -20);
     this.sprite.setLoop(0, false);
     this.position = new Vector2(x, y);
     this.velocity = new Vector2();
