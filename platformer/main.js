@@ -8,7 +8,7 @@ function resizeCanvas()
 	canvas.width = canvas.width; 
 	canvas.height = window.innerHeight - 500;
 }
-resizeCanvas();
+
 
 var startFrameMillis = Date.now();
 var endFrameMillis = Date.now();
