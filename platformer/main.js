@@ -547,12 +547,17 @@ function runGameOver(){
 	context.font = "16.5px Franklin";
 	context.textAling = "center"; 
 	context.fillStyle = "gold";
-	context.fillText("Prepare for the sequel: Revenge of the Bats!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 20); 
+	context.fillText("Prepare for the sequel: The Bats Strike Back", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 20); 
 	
 	context.font = "16.5px Franklin";
 	context.textAling = "center"; 
 	context.fillStyle = "gold";
-	context.fillText("And the sequel to the sequel: The Norrises awakens", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 40); 
+	context.fillText("And the sequel to the sequel: Return of the Chucks", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 40); 
+	
+	context.font = "12px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "gold";
+	context.fillText("Dont forget the prequels: The Phantom Bat, Attack of the Semi-Giant Bats, and Revenge of the Bats", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 60); 
 	}
 	
 	
@@ -587,8 +592,8 @@ context.fillStyle = "GOLD";
 context.strokeStyle = "gold";
 
 
-context.fillText("Attack of the Semi-Giant Bats ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
-context.strokeText("Attack of the Semi-Giant Bats ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
+context.fillText("A New Hope ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
+context.strokeText("A New Hope ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
 
 
 }
