@@ -26,6 +26,7 @@ this.sprite.setAnimationOffset(i, -55, -87);
 	this.sprite.setAnimation(ANIM_IDLE_RIGHT);
 	this.shootTimer = 0;
 	this.cooldownTimer = 0;
+	this.climbing = false; 
 	 
 };
 
@@ -69,11 +70,11 @@ Player.prototype.update = function(deltaTime)
  else{
 	 if(this.jumping == false && this.falling == false){
 		 if(this.direction == LEFT){
-			 if(this.sprite.currentAnimation != ANIM_IDLE_LEFT && this.shoot == false)
+			 if(this.sprite.currentAnimation != ANIM_IDLE_LEFT && this.shoot == false && this.climbing == false)
 				 this.sprite.setAnimation(ANIM_IDLE_LEFT);
 		 }
 		 else{
-			 if(this.sprite.currentAnimation != ANIM_IDLE_RIGHT && this.shoot == false)
+			 if(this.sprite.currentAnimation != ANIM_IDLE_RIGHT && this.shoot == false && this.climbing == false)
 				 this.sprite.setAnimation(ANIM_IDLE_RIGHT);
 		 }
 	 }
@@ -175,7 +176,7 @@ if ((celldown && !cell) || (celldiag && !cellright && nx)) {
  this.velocity.y = 0; // stop downward velocity
  this.falling = false; // no longer falling
  this.jumping = false; // (or jumping)
- ny = 0; // no longer overlaps the cells below
+ ny = 0; // no longer overlaps the cells below 
 }
  }
  else if (this.velocity.y < 0) {
@@ -266,9 +267,10 @@ var celldiag = cellAtTileCoord(LAYER_LADDERS, tx + 1, ty + 1);
 
 if (this.velocity.x <= 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
  if ((cellright && !cell) || (celldiag && !celldown && ny)) {
-	this.position.x = tileToPixel(tx);
 	this.velocity.x = 0; 
-	this.position.y -= 10;
+	this.velocity.y = -3
+	this.position.y -= 5;
+	this.climbing = true; 
 	this.falling = false;
 	if(this.sprite.currentAnimation != ANIM_CLIMB){
 	this.sprite.setAnimation(ANIM_CLIMB);
@@ -277,23 +279,24 @@ if (this.velocity.x <= 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
 }
 else if (this.velocity.x < 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
  if ((cell && !cellright) || (celldown && !celldiag && ny)) {
-	this.position.x = tileToPixel(tx + 1);
 	this.velocity.x = 0;
-	this.position.y -= 10;
+	this.velocity.y = -3
+	this.position.y -= 5;
+	this.climbing = true; 
 	this.falling = false;
 	if(this.sprite.currentAnimation != ANIM_CLIMB){
 	this.sprite.setAnimation(ANIM_CLIMB);
+		}
 	}
 }
-}
-
-
+ if(keyboard.isKeyDown(keyboard.KEY_UP) == false){
+	this.climbing = false;
+} 
 
 
 if(this.lives <= 0){
 	gameState = STATE_GAMEOVER;
 }
-
 
 if(triggerAtTileCoord(LAYER_OBJECT_TRIGGERS, tx, ty) == true)
 {

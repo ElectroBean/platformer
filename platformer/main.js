@@ -506,6 +506,9 @@ var gotHighScore = false;
 function runGameOver(){
 	context.drawImage(gameBackground, 0, 0);
 	
+	context.fillStyle = "black";
+	context.fillRect(0, SCREEN_HEIGHT/2 - 42, 1000, 120)
+	
 	if(firstGameOver == true){
 		firstGameOver = false; 
 		if(score >= highscore){
@@ -520,26 +523,36 @@ function runGameOver(){
 	if(win == false){
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
-	context.fillStyle = "black";
+	context.fillStyle = "gold";
 	context.fillText("You seem to have lost. Nice work!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	}
 	if(score == 0 && win == false){
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
-	context.fillStyle = "black";
+	context.fillStyle = "gold";
 	context.fillText("You literally scored 0, you suck, go home.", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50);
 	}
 	if(score > 0 && win == false){
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
-	context.fillStyle = "black";
+	context.fillStyle = "gold";
 	context.fillText("You scored, " +score + ", nice job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50);
 	}
 	if(score >= 0 && win == true){
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
-	context.fillStyle = "black";
+	context.fillStyle = "gold";
 	context.fillText("You won!!! You scored: " +score, SCREEN_WIDTH/2, SCREEN_HEIGHT/2); 
+	
+	context.font = "16.5px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "gold";
+	context.fillText("Prepare for the sequel: Revenge of the Bats!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 20); 
+	
+	context.font = "16.5px Franklin";
+	context.textAling = "center"; 
+	context.fillStyle = "gold";
+	context.fillText("And the sequel to the sequel: The Norrises awakens", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 40); 
 	}
 	
 	
@@ -553,6 +566,7 @@ function runGameOver(){
 	  enemies.length = 0;
 	  initialize();
 	  score = 0; 
+	  bullets.length = 0; 
 	}
 	
 }
@@ -563,17 +577,18 @@ function runSplash(deltaTime){
 	if(splashTime <= 0){
 		gameState = STATE_GAME;
 	}
-	
 	context.drawImage(background, 0, 0);
+	context.fillStyle = "black";
+	context.fillRect(0, SCREEN_HEIGHT/2 + 5, 1000, 33.5)
 	
-context.font="92px Franklin Gothic Medium Condensed";
+context.font="32px Franklin Gothic Medium Condensed";
 context.textAlign = "center";
-context.fillStyle = "black";
+context.fillStyle = "GOLD";
 context.strokeStyle = "gold";
 
 
-context.fillText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
-context.strokeText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+context.fillText("Attack of the Semi-Giant Bats ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
+context.strokeText("Attack of the Semi-Giant Bats ft. Chuck Norris", SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 30);
 
 
 }
@@ -590,11 +605,11 @@ function runLifeLost(deltaTime){
 		viewOffset.x = 0;
 	}
 	
-	context.fillStyle = "#DEF2FB";
-	context.fillRect(SCREEN_WIDTH/2 - 200, SCREEN_HEIGHT/2 - 33, 400, 50)
-	
-	
+
 	context.fillStyle = "black";
+	context.fillRect(0, SCREEN_HEIGHT/2 - 33, 1000, 50)
+	
+	context.fillStyle = "gold";
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
 	context.fillText("Life Lost! Good Job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
