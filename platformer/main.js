@@ -6,7 +6,7 @@ window.addEventListener('resize', resizeCanvas, false);
 function resizeCanvas()
 {
 	canvas.width = canvas.width; 
-	canvas.height = window.innerHeight - 500;
+	canvas.height = 520;
 }
 resizeCanvas();
 
@@ -228,8 +228,7 @@ cells[layerIdx][y][x+1] = 1;
  }
  }
 
-
-idx = 0;
+ idx = 0;
 for(var y = 0; y < level1.layers[LAYER_OBJECT_ENEMIES].height; y++) {
 for(var x = 0; x < level1.layers[LAYER_OBJECT_ENEMIES].width; x++) {
 if(level1.layers[LAYER_OBJECT_ENEMIES].data[idx] != 0) {
@@ -241,7 +240,7 @@ enemies.push(e);
 idx++;
 }
 } 
-
+ 
 cells[LAYER_OBJECT_TRIGGERS] = [];
 idx = 0;
 for(var y = 0; y < level1.layers[LAYER_OBJECT_TRIGGERS].height; y++) {
@@ -371,6 +370,7 @@ bullets.splice(i, 1);
 break;
 }
 }
+
 for(var i=0; i<bullets.length; i++){
 	var tx = pixelToTile(bullets[i].position.x);
     var ty = pixelToTile(bullets[i].position.y);
@@ -496,6 +496,8 @@ var win = false;
 var firstGameOver = true; 
 var gotHighScore = false;
 function runGameOver(){
+	context.drawImage(gameBackground, 0, 0);
+	
 	if(firstGameOver == true){
 		firstGameOver = false; 
 		if(score >= highscore){
@@ -540,6 +542,8 @@ function runGameOver(){
 	  viewOffset.x = 0;
 	  player.sprite.setAnimation(ANIM_IDLE_RIGHT);
 	  win = false;
+	  enemies.length = 0;
+	  initialize();
 	  score = 0; 
 	}
 	
@@ -568,6 +572,8 @@ context.strokeText("Norris!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 
 var lifelosttime = 1;
 function runLifeLost(deltaTime){
+	context.drawImage(gameBackground, 0, 0);
+	
 	lifelosttime -= deltaTime; 
 	if(lifelosttime <= 0){
 		gameState = STATE_GAME;
@@ -576,11 +582,13 @@ function runLifeLost(deltaTime){
 		viewOffset.x = 0;
 	}
 	
+	context.fillStyle = "#DEF2FB";
+	context.fillRect(SCREEN_WIDTH/2 - 200, SCREEN_HEIGHT/2 - 33, 400, 50)
 	
+	
+	context.fillStyle = "black";
 	context.font = "32px Franklin";
 	context.textAling = "center"; 
-	context.fillStyle = "black";
-	
 	context.fillText("Life Lost! Good Job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 }
 

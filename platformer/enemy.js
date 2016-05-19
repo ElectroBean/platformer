@@ -1,15 +1,12 @@
 var Enemy = function(x, y) {	
 	this.sprite = new Sprite("batEnemy.png");
-    this.sprite.buildAnimation(6, 2, 64, 64, 0.2, [0, 1, 2, 3, 4]);
-	this.sprite.buildAnimation(6, 2, 64, 64, 0.2, [6, 7, 8, 9, 10]);
-	for(var i=0; i<ANIM_MAXIMUM; i++){
-	this.sprite.setAnimationOffset(i, 1, -50);
-	}
+    this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [0, 1, 2, 3, 4]);
+	this.sprite.buildAnimation(12, 8, 64, 64, 0.2, [6, 7, 8, 9, 10]);
     this.position = new Vector2(x, y);
     this.velocity = new Vector2();
     this.moveRight = true;
     this.pause = 0;
-    this.sprite.setAnimation(ANIM_FLY_RIGHT);
+    this.sprite.setAnimation(ANIM_FLY_LEFT);
 };
 
 var ANIM_FLY_LEFT = 0; 
@@ -19,6 +16,19 @@ var ANIM_MAXIMUM = 2;
 Enemy.prototype.update = function(deltaTime)
 {
 this.sprite.update(deltaTime);
+if(this.moveRight == true && this.sprite.currentAnimation != ANIM_FLY_RIGHT){
+	this.sprite.setAnimation(ANIM_FLY_RIGHT);
+	for(var i=0; i<ANIM_MAXIMUM; i++){
+	this.sprite.setAnimationOffset(0, 1, -50);
+	}
+}
+else if(this.moveRight != true && this.sprite.currentAnimation != ANIM_FLY_LEFT){
+	this.sprite.setAnimation(ANIM_FLY_LEFT);
+	for(var i=0; i<ANIM_MAXIMUM; i++){
+	this.sprite.setAnimationOffset(0, 1, -50);
+	}
+}
+
 if(this.pause > 0)
 {
 this.pause -= deltaTime;
