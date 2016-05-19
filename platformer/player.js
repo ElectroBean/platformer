@@ -98,14 +98,14 @@ this.cooldownTimer = 0.2;
 
  if(keyboard.isKeyDown(keyboard.KEY_Z) == true){
 	 this.shoot = true;
-	 if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_SHOOT_LEFT){
+	 if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_SHOOT_LEFT && this.shoot == true){
 		 this.sprite.setAnimation(ANIM_SHOOT_LEFT);
 	 }
-	 if(this.direction == RIGHT && this.sprite.currentAnimation != ANIM_SHOOT_RIGHT){
+	 if(this.direction == RIGHT && this.sprite.currentAnimation != ANIM_SHOOT_RIGHT && this.shoot == true){
 		 this.sprite.setAnimation(ANIM_SHOOT_RIGHT);
 	 }
  }
- else if(keyboard.isKeyDown(keyboard.KEY_Z) == false){
+if(keyboard.isKeyDown(keyboard.KEY_Z) == false){
 	 this.shoot = false;
  }
  
