@@ -337,7 +337,7 @@ if(player.position.x < viewOffset.x){
 if(player.shootTimer > 0)
 player.shootTimer -= deltaTime;
 
-if(player.shoot == true && player.lives >= 1 && bullets.length <= 10 && player.shootTimer <= 0)
+if(player.shoot == true && player.lives >= 1 && bullets.length <= 10 && player.shootTimer <= 0 && player.climbing == false)
 {
 	if(player.direction == RIGHT){
 	var e = new Bullet(player.position.x + 100, player.position.y - 14, player.direction == RIGHT); 

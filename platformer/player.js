@@ -96,12 +96,12 @@ this.cooldownTimer = 0.2;
 // Shoot a bullet
 }
 
- if(keyboard.isKeyDown(keyboard.KEY_Z) == true){
+ if(keyboard.isKeyDown(keyboard.KEY_Z) == true && this.climbing == false){
 	 this.shoot = true;
-	 if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_SHOOT_LEFT && this.shoot == true){
+	 if(this.direction == LEFT && this.sprite.currentAnimation != ANIM_SHOOT_LEFT && this.shoot == true && this.climbing == false){
 		 this.sprite.setAnimation(ANIM_SHOOT_LEFT);
 	 }
-	 if(this.direction == RIGHT && this.sprite.currentAnimation != ANIM_SHOOT_RIGHT && this.shoot == true){
+	 if(this.direction == RIGHT && this.sprite.currentAnimation != ANIM_SHOOT_RIGHT && this.shoot == true && this.climbing == false){
 		 this.sprite.setAnimation(ANIM_SHOOT_RIGHT);
 	 }
  }
@@ -271,7 +271,6 @@ if (this.velocity.x <= 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
 	this.velocity.y = -3
 	this.position.y -= 5;
 	this.climbing = true; 
-	this.falling = false;
 	if(this.sprite.currentAnimation != ANIM_CLIMB){
 	this.sprite.setAnimation(ANIM_CLIMB);
 	}
@@ -283,7 +282,6 @@ else if (this.velocity.x < 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
 	this.velocity.y = -3
 	this.position.y -= 5;
 	this.climbing = true; 
-	this.falling = false;
 	if(this.sprite.currentAnimation != ANIM_CLIMB){
 	this.sprite.setAnimation(ANIM_CLIMB);
 		}
