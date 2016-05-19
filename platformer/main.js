@@ -323,6 +323,14 @@ player.update(deltaTime);
 
 player.draw();
 
+if(player.position.x < viewOffset.x){
+	player.velocity.x = 0; 
+ 	if(player.velocity.x == 0 && keyboard.isKeyDown(keyboard.KEY_RIGHT) == true){
+		player.velocity.x = player.velocity.x;
+		player.position.x = viewOffset.x;
+	}
+}
+
 //bullet stuff
 
 

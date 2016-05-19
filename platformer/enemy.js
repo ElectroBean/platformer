@@ -4,7 +4,7 @@ var Enemy = function(x, y) {
 	this.sprite.buildAnimation(12, 1, 64, 64, 0.2, [6, 7, 8, 9, 10]);
 	for(var i=0; i<ANIM_MAXIMUM; i++){
 	this.sprite.setAnimationOffset(i, 1, -50);
-	}
+	} 
     this.position = new Vector2(x, y);
     this.velocity = new Vector2();
     this.moveRight = true;
