@@ -345,7 +345,7 @@ if(player.shoot == true && player.lives >= 1 && bullets.length <= 10 && player.s
 	bullets.push(e);
 	}
 else if(player.direction == LEFT){
-	var e = new Bullet(player.position.x - 60, player.position.y - 14, player.direction == RIGHT); 
+	var e = new Bullet(player.position.x - 100, player.position.y - 14, player.direction == RIGHT); 
 	player.shootTimer += 0.2;
 	bullets.push(e);
 }
