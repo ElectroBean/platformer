@@ -82,6 +82,7 @@ var player = new Player();
 var keyboard = new Keyboard();
 var bullets = [];
 var enemies = [];
+var boss = [];
 
 var LAYER_COUNT = level1.layers.length;
 var LAYER_BACKGROUND = 0;
@@ -92,7 +93,8 @@ var LAYER_OBJECT_TRIGGERS = 4;
 var LAYER_OBJECT_KEYS = 5; 
 var LAYER_OBJECT_DOORS = 6; 
 var LAYER_DEATHONTOUCH = 7;
-var LAYER_MAX = 8;
+var LAYER_BOSS = 8;
+var LAYER_MAX = 9;
 
 
 
@@ -127,6 +129,9 @@ var JUMP = METER * 1500;
 
 var ENEMY_MAXDX = METER * 5;
 var ENEMY_ACCEL = ENEMY_MAXDX * 2;
+
+var BOSS_MAXDX = METER * 5;
+var BOSS_ACCEL = BOSS_MAXDX * 2;
 
 
 var score = 0;
@@ -243,6 +248,20 @@ enemies.push(e);
 idx++;
 }
 } 
+
+
+ idx = 0;
+for(var y = 0; y < level1.layers[LAYER_BOSS].height; y++) {
+for(var x = 0; x < level1.layers[LAYER_BOSS].width; x++) {
+if(level1.layers[LAYER_BOSS].data[idx] != 0) {
+var px = tileToPixel(x);
+var py = tileToPixel(y);
+var e = new Boss(px, py);
+boss.push(e);
+}
+idx++;
+}
+} 
  
 cells[LAYER_OBJECT_TRIGGERS] = [];
 idx = 0;
@@ -355,12 +374,39 @@ score += 1;
 break;
 }
 }
+
+////////////////////////////////////////////////////////////// boss stuff
+for(var j=0; j<boss.length; j++)
+{
+if(intersects( bullets[i].position.x, bullets[i].position.y, TILE, TILE,
+               boss[j].position.x, boss[j].position.y, TILE, TILE) == true && boss.lives > 1)
+{
+boss.lives -= 1;
+hit = true;
+score += 1;
+break;
+}
+else if(intersects( bullets[i].position.x, bullets[i].position.y, TILE, TILE,
+                    boss[j].position.x, boss[j].position.y, TILE, TILE) == true && boss.lives == 1){
+				   boss.lives -= 1; 
+				   boss.splice(j, 1);
+				   score += 10;
+				   hit = true;
+				   break;
+			   }
+}
 if(hit == true)
 {
 bullets.splice(i, 1);
 break;
 }
 }
+
+
+
+
+
+
 
 for(var i=0; i<bullets.length; i++){
 	var tx = pixelToTile(bullets[i].position.x);
@@ -427,7 +473,15 @@ if (intersects (player.position.x, player.position.y, TILE, TILE,
 }
 
 
+for(var i=0; i<boss.length; i++)
+{
+boss[i].update(deltaTime);
+}
 
+for(var i=0; i<boss.length; i++)
+{
+    boss[i].draw();
+}
 
 
 for(var i=0; i<enemies.length; i++)
@@ -555,6 +609,7 @@ function runGameOver(){
 	  initialize();
 	  score = 0; 
 	  bullets.length = 0; 
+	  boss.length = 0;
 	}
 	
 }

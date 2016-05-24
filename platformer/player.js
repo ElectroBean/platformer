@@ -265,7 +265,7 @@ var cellright = cellAtTileCoord(LAYER_LADDERS, tx + 1, ty);
 var celldown = cellAtTileCoord(LAYER_LADDERS, tx, ty + 1);
 var celldiag = cellAtTileCoord(LAYER_LADDERS, tx + 1, ty + 1);
 
-if (this.velocity.x <= 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
+if (keyboard.isKeyDown(keyboard.KEY_UP) == true) {
  if ((cellright && !cell) || (celldiag && !celldown && ny)) {
 	this.velocity.x = 0; 
 	this.velocity.y = -3
@@ -276,7 +276,7 @@ if (this.velocity.x <= 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
 	}
  }
 }
-else if (this.velocity.x < 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
+else if (keyboard.isKeyDown(keyboard.KEY_UP) == true) {
  if ((cell && !cellright) || (celldown && !celldiag && ny)) {
 	this.velocity.x = 0;
 	this.velocity.y = -3
