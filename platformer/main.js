@@ -262,26 +262,6 @@ cells[LAYER_OBJECT_TRIGGERS][y][x] = 0;
 idx++;
 }
 }
-
-
-
-var musicBackground = new Howl(
-{
-urls: ["background.ogg"],
-loop: true,
-buffer: true,
-volume: 0.1,
-} );
-musicBackground.play();
-sfxFire = new Howl(
-{
-urls: ["fireEffect.ogg"],
-buffer: true,
-volume: 0.2,
-onend: function() {
-isSfxPlaying = false;
-}
-} );
 }
 
 function run()
@@ -611,6 +591,7 @@ function runLifeLost(deltaTime){
 		lifelosttime = 1;
 		player.position.set (0, 0);
 		viewOffset.x = 0;
+		bullets.length = 0;
 	}
 	
 
@@ -623,6 +604,27 @@ function runLifeLost(deltaTime){
 	context.fillText("Life Lost! Good Job!", SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 }
 
+function music(){
+	var musicBackground = new Howl(
+{
+urls: ["background.ogg"],
+loop: true,
+buffer: true,
+volume: 0.1,
+} );
+musicBackground.play();
+sfxFire = new Howl(
+{
+urls: ["fireEffect.ogg"],
+buffer: true,
+volume: 0.2,
+onend: function() {
+isSfxPlaying = false;
+}
+} );
+}
+
+music();
 initialize();
 
 
