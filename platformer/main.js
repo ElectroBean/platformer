@@ -92,6 +92,9 @@ var LAYER_OBJECT_TRIGGERS = 4;
 var LAYER_OBJECT_KEYS = 5; 
 var LAYER_OBJECT_DOORS = 6; 
 var LAYER_DEATHONTOUCH = 7;
+var LAYER_MAX = 8;
+
+
 
 var MAP = {tw: level1.width, th: level1.height};
 var TILE = level1.tilewidth;
@@ -420,7 +423,7 @@ if(player.lives > 1)
 for(var i=0; i<enemies.length; i++)
 {
 if (intersects (player.position.x, player.position.y, TILE, TILE,
-                      enemies[i].position.x, enemies[i].position.y, TILE, TILE) == true)
+                enemies[i].position.x, enemies[i].position.y, TILE, TILE) == true)
 {
     player.lives -= 1;
 	gameState = STATE_LIFELOST;

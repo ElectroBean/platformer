@@ -290,8 +290,38 @@ else if (this.velocity.x < 0 && keyboard.isKeyDown(keyboard.KEY_UP) == true) {
  if(keyboard.isKeyDown(keyboard.KEY_UP) == false){
 	this.climbing = false;
 } 
+///////////////////////////////////////////////////////////////////////
+var tx = pixelToTile(this.position.x);
+var ty = pixelToTile(this.position.y);
+var nx = (this.position.x)%TILE; // true if player overlaps right
+var ny = (this.position.y)%TILE; // true if player overlaps below
+var cell = cellAtTileCoord(LAYER_OBJECT_KEYS, tx, ty);
+var cellright = cellAtTileCoord(LAYER_OBJECT_KEYS, tx + 1, ty);
+var celldown = cellAtTileCoord(LAYER_OBJECT_KEYS, tx, ty + 1);
+var celldiag = cellAtTileCoord(LAYER_OBJECT_KEYS, tx + 1, ty + 1);
 
+ if (this.velocity.y > 0) {
+if ((celldown && !cell) || (celldiag && !cellright && nx)) {
+LAYER_OBJECT_KEYS.visibility = "hidden";
+}
+ }
+ else if (this.velocity.y < 0) {
+if ((cell && !celldown) || (cellright && !celldiag && nx)) {
+LAYER_OBJECT_KEYS.visibility = "hidden";
+}
+}
+if (this.velocity.x > 0) {
+ if ((cellright && !cell) || (celldiag && !celldown && ny)) {
+LAYER_OBJECT_KEYS.visibility = "hidden";
+ }
+}
+else if (this.velocity.x < 0) {
+ if ((cell && !cellright) || (celldown && !celldiag && ny)) {
+LAYER_OBJECT_KEYS.visibility = "hidden";
+}
+}
 
+///////////////////////////////////////////////////////////////////////
 if(this.lives <= 0){
 	gameState = STATE_GAMEOVER;
 }
